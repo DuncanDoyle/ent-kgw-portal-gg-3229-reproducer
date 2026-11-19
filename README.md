@@ -1,6 +1,6 @@
 # Portal: stitching ignores HTTPRoute match precedence
 
-Follow-up to [solo-io/gloo-gateway#2631](https://github.com/solo-io/gloo-gateway/issues/2631) (no operation-level `exclude` on the v2 ApiProduct).
+Reproducer for [solo-io/gloo-gateway#3229](https://github.com/solo-io/gloo-gateway/issues/3229). Found while looking for a workaround for [#2631](https://github.com/solo-io/gloo-gateway/issues/2631) (no operation-level `exclude` on the v2 ApiProduct).
 
 SEFK Portal publishes an operation in the stitched ApiDoc when an HTTPRoute rule routes to it. To exclude a single operation without listing every other one, you would combine a catch-all rule (`PathPrefix /`) with a more specific "shadow" rule for the excluded operation. At the gateway the shadow rule wins, as Gateway API precedence requires. **Stitching ignores that precedence.** Each rule is projected on its own, so the catch-all still publishes the excluded operation. Only an explicit allowlist (case A) works.
 
