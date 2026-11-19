@@ -1,0 +1,15 @@
+# Allows the Portal in kgateway-system to reference the ApiProducts in portal-repro.
+# Without it the Portal cannot pick up the products.
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: from-portal-to-api-product
+  namespace: portal-repro
+spec:
+  from:
+    - group: portal.solo.io
+      kind: Portal
+      namespace: kgateway-system
+  to:
+    - group: portal.solo.io
+      kind: ApiProduct

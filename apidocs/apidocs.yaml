@@ -1,0 +1,107 @@
+# ApiDocs. Cases A-E each get the same four-operation spec, served by that case's Service.
+# number-v2 has its own one-operation spec, used only by case E's shadow rule.
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiDoc
+metadata:
+  name: case-a-doc
+  namespace: portal-repro
+spec:
+  servedBy: {group: "", kind: Service, name: case-a, namespace: portal-repro, port: 8080}
+  source:
+    manual:
+      content: |
+        openapi: 3.0.0
+        info: {title: Org Service (case a), version: "1.0"}
+        paths:
+          /person:    {get: {operationId: getPerson,    summary: from case-a, responses: {"200": {description: OK}}}}
+          /address:   {get: {operationId: getAddress,   summary: from case-a, responses: {"200": {description: OK}}}}
+          /number:    {get: {operationId: getNumber,    summary: from case-a, responses: {"200": {description: OK}}}}
+          /lineitems: {get: {operationId: getLineitems, summary: from case-a, responses: {"200": {description: OK}}}}
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiDoc
+metadata:
+  name: case-b-doc
+  namespace: portal-repro
+spec:
+  servedBy: {group: "", kind: Service, name: case-b, namespace: portal-repro, port: 8080}
+  source:
+    manual:
+      content: |
+        openapi: 3.0.0
+        info: {title: Org Service (case b), version: "1.0"}
+        paths:
+          /person:    {get: {operationId: getPerson,    summary: from case-b, responses: {"200": {description: OK}}}}
+          /address:   {get: {operationId: getAddress,   summary: from case-b, responses: {"200": {description: OK}}}}
+          /number:    {get: {operationId: getNumber,    summary: from case-b, responses: {"200": {description: OK}}}}
+          /lineitems: {get: {operationId: getLineitems, summary: from case-b, responses: {"200": {description: OK}}}}
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiDoc
+metadata:
+  name: case-c-doc
+  namespace: portal-repro
+spec:
+  servedBy: {group: "", kind: Service, name: case-c, namespace: portal-repro, port: 8080}
+  source:
+    manual:
+      content: |
+        openapi: 3.0.0
+        info: {title: Org Service (case c), version: "1.0"}
+        paths:
+          /person:    {get: {operationId: getPerson,    summary: from case-c, responses: {"200": {description: OK}}}}
+          /address:   {get: {operationId: getAddress,   summary: from case-c, responses: {"200": {description: OK}}}}
+          /number:    {get: {operationId: getNumber,    summary: from case-c, responses: {"200": {description: OK}}}}
+          /lineitems: {get: {operationId: getLineitems, summary: from case-c, responses: {"200": {description: OK}}}}
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiDoc
+metadata:
+  name: case-d-doc
+  namespace: portal-repro
+spec:
+  servedBy: {group: "", kind: Service, name: case-d, namespace: portal-repro, port: 8080}
+  source:
+    manual:
+      content: |
+        openapi: 3.0.0
+        info: {title: Org Service (case d), version: "1.0"}
+        paths:
+          /person:    {get: {operationId: getPerson,    summary: from case-d, responses: {"200": {description: OK}}}}
+          /address:   {get: {operationId: getAddress,   summary: from case-d, responses: {"200": {description: OK}}}}
+          /number:    {get: {operationId: getNumber,    summary: from case-d, responses: {"200": {description: OK}}}}
+          /lineitems: {get: {operationId: getLineitems, summary: from case-d, responses: {"200": {description: OK}}}}
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiDoc
+metadata:
+  name: case-e-doc
+  namespace: portal-repro
+spec:
+  servedBy: {group: "", kind: Service, name: case-e, namespace: portal-repro, port: 8080}
+  source:
+    manual:
+      content: |
+        openapi: 3.0.0
+        info: {title: Org Service (case e), version: "1.0"}
+        paths:
+          /person:    {get: {operationId: getPerson,    summary: from case-e, responses: {"200": {description: OK}}}}
+          /address:   {get: {operationId: getAddress,   summary: from case-e, responses: {"200": {description: OK}}}}
+          /number:    {get: {operationId: getNumber,    summary: from case-e, responses: {"200": {description: OK}}}}
+          /lineitems: {get: {operationId: getLineitems, summary: from case-e, responses: {"200": {description: OK}}}}
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiDoc
+metadata:
+  name: number-v2-doc
+  namespace: portal-repro
+spec:
+  servedBy: {group: "", kind: Service, name: number-v2, namespace: portal-repro, port: 8080}
+  source:
+    manual:
+      content: |
+        openapi: 3.0.0
+        info: {title: Number Service v2, version: "2.0"}
+        paths:
+          /number: {get: {operationId: getNumberV2, summary: from number-v2, responses: {"200": {description: OK}}}}

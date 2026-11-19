@@ -1,0 +1,15 @@
+apiVersion: portal.solo.io/v1alpha1
+kind: Portal
+metadata:
+  name: portal
+  namespace: kgateway-system
+spec:
+  parametersRef:
+    name: portal-params
+  # Public so the products can be viewed without any auth wiring.
+  visibility:
+    public: true
+  apiProductRefs:
+    # Cross-namespace, hence referencegrants/portal-to-apiproduct-rg.yaml.
+    - name: "*"
+      namespace: portal-repro

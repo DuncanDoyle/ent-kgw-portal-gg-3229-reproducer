@@ -1,0 +1,97 @@
+# One HTTPRoute per case, each on its own hostname. Every ApiDoc describes the same four
+# operations: GET /person, GET /address, GET /number, GET /lineitems.
+#
+# Goal: publish everything EXCEPT GET /number.
+#
+# CASE A (control)  allowlist: one Exact match per wanted operation. No catch-all.
+# CASE B            catch-all PathPrefix / + shadow rule for GET /number with NO backendRefs.
+# CASE C            catch-all PathPrefix / + shadow rule for GET /number -> DirectResponse 404.
+# CASE D            catch-all PathPrefix / + shadow rule for GET /number -> Service without an ApiDoc.
+# CASE E            catch-all PathPrefix / + shadow rule for GET /number -> Service WITH its own ApiDoc.
+#
+# In B-E the Exact /number match is more specific than PathPrefix /, so Gateway API precedence
+# sends GET /number to the shadow rule, never to the catch-all backend. The question is whether
+# portal stitching applies the same precedence when it decides which operations are routable.
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: case-a
+  namespace: portal-repro
+spec:
+  parentRefs: [{name: gw, namespace: ingress-gw}]
+  hostnames: [case-a.example.com]
+  rules:
+    - matches:
+        - {path: {type: Exact, value: /person}, method: GET}
+        - {path: {type: Exact, value: /address}, method: GET}
+        - {path: {type: Exact, value: /lineitems}, method: GET}
+      backendRefs: [{name: case-a, port: 8080}]
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: case-b
+  namespace: portal-repro
+spec:
+  parentRefs: [{name: gw, namespace: ingress-gw}]
+  hostnames: [case-b.example.com]
+  rules:
+    - matches: [{path: {type: PathPrefix, value: /}}]
+      backendRefs: [{name: case-b, port: 8080}]
+    # Shadow rule: no backendRefs, so the gateway answers GET /number with a 500.
+    - matches: [{path: {type: Exact, value: /number}, method: GET}]
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: case-c
+  namespace: portal-repro
+spec:
+  parentRefs: [{name: gw, namespace: ingress-gw}]
+  hostnames: [case-c.example.com]
+  rules:
+    - matches: [{path: {type: PathPrefix, value: /}}]
+      backendRefs: [{name: case-c, port: 8080}]
+    # Shadow rule: DirectResponse 404, the "clean" way to block an operation.
+    - matches: [{path: {type: Exact, value: /number}, method: GET}]
+      filters:
+        - type: ExtensionRef
+          extensionRef: {group: gateway.kgateway.dev, kind: DirectResponse, name: number-not-found}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: case-d
+  namespace: portal-repro
+spec:
+  parentRefs: [{name: gw, namespace: ingress-gw}]
+  hostnames: [case-d.example.com]
+  rules:
+    - matches: [{path: {type: PathPrefix, value: /}}]
+      backendRefs: [{name: case-d, port: 8080}]
+    # Shadow rule: routes GET /number to a Service that has no ApiDoc.
+    - matches: [{path: {type: Exact, value: /number}, method: GET}]
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier: {set: [{name: x-matched-rule, value: shadow}]}
+      backendRefs: [{name: sink, port: 8080}]
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: case-e
+  namespace: portal-repro
+spec:
+  parentRefs: [{name: gw, namespace: ingress-gw}]
+  hostnames: [case-e.example.com]
+  rules:
+    - matches: [{path: {type: PathPrefix, value: /}}]
+      backendRefs: [{name: case-e, port: 8080}]
+    # Not an exclusion: GET /number is served by a different backend with its own ApiDoc.
+    # The stitched spec should describe number-v2's GET /number, not case-e's.
+    - matches: [{path: {type: Exact, value: /number}, method: GET}]
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier: {set: [{name: x-matched-rule, value: shadow}]}
+      backendRefs: [{name: number-v2, port: 8080}]

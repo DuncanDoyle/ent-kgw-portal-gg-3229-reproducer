@@ -1,0 +1,53 @@
+Waiting for stitched ApiDocs ...
+
+=== CASE A ===
+version status: Ready=True (Accepted) Successfully reconciled version
+stitched operations:
+  GET /person  (from case-a)
+  GET /address  (from case-a)
+  GET /lineitems  (from case-a)
+gateway GET /number: 404 ()
+
+=== CASE B ===
+version status: Ready=True (Accepted) Successfully reconciled version
+stitched operations:
+  GET /address  (from case-b)
+  GET /lineitems  (from case-b)
+  GET /number  (from case-b)
+  GET /person  (from case-b)
+gateway GET /number: 500 (invalid route configuration detected and replaced with a dir)
+
+=== CASE C ===
+version status: Ready=True (Accepted) Successfully reconciled version
+stitched operations:
+  GET /address  (from case-c)
+  GET /lineitems  (from case-c)
+  GET /number  (from case-c)
+  GET /person  (from case-c)
+gateway GET /number: 404 (excluded operation)
+
+=== CASE D ===
+version status: Ready=True (Accepted) Successfully reconciled version
+stitched operations:
+  GET /address  (from case-d)
+  GET /lineitems  (from case-d)
+  GET /number  (from case-d)
+  GET /person  (from case-d)
+gateway GET /number: 200 via shadow rule
+
+=== CASE E ===
+version status: Ready=True (Warning) Version reconciled with warnings: ApiDoc "number-v2-doc" (HTTPRoute "case-e", rule 1) excluded: conflicting path "/number"
+stitched operations:
+  GET /address  (from case-e)
+  GET /lineitems  (from case-e)
+  GET /number  (from case-e)
+  GET /person  (from case-e)
+gateway GET /number: 200 via shadow rule
+
+Expected: the stitched spec lists only operations the gateway routes to the ApiDoc's backend.
+  A  person, address, lineitems                      gateway /number: 404 (no route)
+  B  person, address, lineitems                      gateway /number: 500 (rule without backend)
+  C  person, address, lineitems                      gateway /number: 404 (DirectResponse)
+  D  person, address, lineitems                      gateway /number: 200 via shadow rule -> sink
+  E  person, address, lineitems + number from number-v2   gateway /number: 200 via shadow rule -> number-v2
+./test.sh: line 53: 57927 Terminated: 15          $K -n ingress-gw port-forward svc/gw 18080:80 > /dev/null 2>&1

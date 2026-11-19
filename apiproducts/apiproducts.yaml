@@ -1,0 +1,61 @@
+# ApiProducts, one per case. The controller writes a stitched ApiDoc named case-<x>-v1.
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiProduct
+metadata:
+  name: case-a
+  namespace: portal-repro
+spec:
+  id: case-a
+  displayName: "Case A"
+  versions:
+    - name: v1
+      targetRefs: [{group: gateway.networking.k8s.io, kind: HTTPRoute, name: case-a}]
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiProduct
+metadata:
+  name: case-b
+  namespace: portal-repro
+spec:
+  id: case-b
+  displayName: "Case B"
+  versions:
+    - name: v1
+      targetRefs: [{group: gateway.networking.k8s.io, kind: HTTPRoute, name: case-b}]
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiProduct
+metadata:
+  name: case-c
+  namespace: portal-repro
+spec:
+  id: case-c
+  displayName: "Case C"
+  versions:
+    - name: v1
+      targetRefs: [{group: gateway.networking.k8s.io, kind: HTTPRoute, name: case-c}]
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiProduct
+metadata:
+  name: case-d
+  namespace: portal-repro
+spec:
+  id: case-d
+  displayName: "Case D"
+  versions:
+    - name: v1
+      targetRefs: [{group: gateway.networking.k8s.io, kind: HTTPRoute, name: case-d}]
+---
+apiVersion: portal.solo.io/v1alpha1
+kind: ApiProduct
+metadata:
+  name: case-e
+  namespace: portal-repro
+spec:
+  id: case-e
+  displayName: "Case E"
+  versions:
+    - name: v1
+      targetRefs: [{group: gateway.networking.k8s.io, kind: HTTPRoute, name: case-e}]

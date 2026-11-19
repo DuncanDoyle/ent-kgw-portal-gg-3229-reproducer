@@ -1,0 +1,94 @@
+# Echo backend: returns the request as JSON, including headers, so test.sh can see which rule
+# handled a request (rules D and E tag the shadow rule with an x-matched-rule header).
+#
+# One Deployment, one Service per case. Each ApiDoc's servedBy points at its own Service, so
+# each rule resolves to exactly one ApiDoc and no ambiguity error masks the behaviour under test.
+apiVersion: v1
+kind: Service
+metadata:
+  name: case-a
+  namespace: portal-repro
+spec:
+  selector: {app: echo}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: case-b
+  namespace: portal-repro
+spec:
+  selector: {app: echo}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: case-c
+  namespace: portal-repro
+spec:
+  selector: {app: echo}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: case-d
+  namespace: portal-repro
+spec:
+  selector: {app: echo}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+# Case D shadow target. Deliberately has NO ApiDoc.
+apiVersion: v1
+kind: Service
+metadata:
+  name: sink
+  namespace: portal-repro
+spec:
+  selector: {app: echo}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: case-e
+  namespace: portal-repro
+spec:
+  selector: {app: echo}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+# Case E shadow target. Has its OWN ApiDoc describing GET /number differently.
+apiVersion: v1
+kind: Service
+metadata:
+  name: number-v2
+  namespace: portal-repro
+spec:
+  selector: {app: echo}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  namespace: portal-repro
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: echo}
+  template:
+    metadata:
+      labels: {app: echo}
+    spec:
+      containers:
+        - name: echo
+          image: mendhak/http-https-echo:35
+          env:
+            - {name: HTTP_PORT, value: "8080"}
+          ports:
+            - {name: http, containerPort: 8080}
+          readinessProbe:
+            httpGet: {path: /, port: http}
+            initialDelaySeconds: 2
+            periodSeconds: 5

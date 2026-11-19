@@ -1,0 +1,9 @@
+# Case C: the shadow rule answers GET /number itself with a 404, so it never reaches a backend.
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: DirectResponse
+metadata:
+  name: number-not-found
+  namespace: portal-repro
+spec:
+  status: 404
+  body: "excluded operation"

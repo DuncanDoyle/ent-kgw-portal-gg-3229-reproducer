@@ -1,0 +1,15 @@
+apiVersion: portal.solo.io/v1alpha1
+kind: PortalParameters
+metadata:
+  name: portal-params
+  namespace: kgateway-system
+spec:
+  store:
+    postgres:
+      secretRef:
+        name: portal-postgres-secret
+  # No idpServerURL: this reproducer has no Keycloak and needs no dynamic OAuth client
+  # registration — it only needs the ApiProduct controller to stitch ApiDocs. If the portal
+  # rejects the CR without it, install the IDP connector (see install-portal-idp-connect.sh
+  # in the ent-kgw-portal-demo repo) and set:
+  # idpServerURL: "http://idp-connect.kgateway-system.svc.cluster.local"
